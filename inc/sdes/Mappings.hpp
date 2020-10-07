@@ -25,8 +25,7 @@ namespace sdes
         std::uint32_t mNumRounds;
 
     public:
-        constexpr explicit
-        Mappings(std::uint32_t numRounds) noexcept;
+        constexpr explicit Mappings(std::uint32_t numRounds) noexcept;
 
     public:
         [[nodiscard]]

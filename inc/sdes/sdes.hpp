@@ -16,8 +16,7 @@ namespace sdes
     class SDES
     {
     public:
-        constexpr
-        SDES(std::uint64_t key, const Mappings& mappings) noexcept;
+        constexpr SDES(std::uint64_t key, const Mappings& mappings) noexcept;
 
     public:
         constexpr void SetKey(std::uint64_t key) noexcept;
