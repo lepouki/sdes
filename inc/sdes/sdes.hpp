@@ -250,14 +250,12 @@ namespace sdes
             static_cast<std::uint32_t>(keyHalves.second)
         };
 
-        const auto kGlued = Glue<std::uint64_t, 28>(kHalves);
-        return mMappings.PC2(kGlued);
+        return mMappings.PC2(Glue<std::uint64_t, 28>(kHalves));
     }
 
     constexpr std::uint32_t SDES::F(std::uint32_t blockHalf, std::uint64_t subKey) const noexcept
     {
-        const auto kXor = mMappings.E(blockHalf) ^ subKey;
-        const auto kCompressed = mMappings.S(kXor); // Simplified S boxes
+        const auto kCompressed = mMappings.S(mMappings.E(blockHalf) ^ subKey);
         return mMappings.P(kCompressed);
     }
 
