@@ -48,6 +48,9 @@ namespace sdes
 
         private:
             std::uint32_t mValue;
+
+        private:
+            constexpr void Clamp() noexcept;
         };
 
         using KeyHalves = std::pair<KeyHalf, KeyHalf>;
@@ -167,13 +170,18 @@ namespace sdes
     {
         const auto kDiff = (28u - offset);
         mValue = (mValue << offset) + (mValue >> kDiff);
-        mValue &= 0x0FFFFFFFu; // Keep only the first 28 bits
+        Clamp();
     }
 
     constexpr void SDES::KeyHalf::operator>>=(std::uint16_t offset) noexcept
     {
         const auto kDiff = (28u - offset);
-        mValue = (mValue >> offset) + (mValue << kDiff);
+        mValue = (mValue >> offset) + (mValue << kDiff);\
+        Clamp();
+    }
+
+    constexpr void SDES::KeyHalf::Clamp() noexcept
+    {
         mValue &= 0x0FFFFFFFu; // Keep only the first 28 bits
     }
 
