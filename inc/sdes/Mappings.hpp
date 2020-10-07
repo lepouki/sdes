@@ -29,29 +29,45 @@ namespace sdes
         Mappings(std::uint32_t numRounds) noexcept;
 
     public:
-        constexpr std::uint64_t
-        [[nodiscard]] IP(std::uint64_t block) const noexcept;
+        [[nodiscard]]
+        constexpr std::uint64_t IP(std::uint64_t block) const noexcept;
 
-        constexpr std::uint64_t
-        [[nodiscard]] FP(std::uint64_t block) const noexcept;
+        [[nodiscard]]
+        constexpr std::uint64_t FP(std::uint64_t block) const noexcept;
 
-        constexpr std::uint64_t
-        [[nodiscard]] PC1(std::uint64_t key) const noexcept;
+        [[nodiscard]]
+        constexpr std::uint64_t PC1(std::uint64_t key) const noexcept;
 
     private:
         template<typename To, typename /* Deduced */ From, std::size_t /* Deduced */ ToSize>
-        constexpr To
-        [[nodiscard]] MapBlock(From block, const MapFunction<ToSize>& function) const noexcept;
+        [[nodiscard]]
+        constexpr To Map(From block, const MapFunction<ToSize>& function) const noexcept;
     };
 
-    constexpr
-    Mappings::Mappings(std::uint32_t numRounds) noexcept
+    // Implementation //
+
+    template<typename To, typename From, std::size_t ToSize>
+    constexpr To Mappings::Map(From block, const MapFunction<ToSize>& function) const noexcept
+    {
+        static_assert(ToSize <= (sizeof(To) * 8), "ToSize is too big");
+        To result = 0;
+
+        for (unsigned i = 0; i < ToSize; ++i)
+        {
+            bool value = block & 1u;
+            result |= static_cast<To>(value) << (function[i] - 1u); // Functions are 1-indexed
+            block >>= 1u;
+        }
+
+        return result;
+    }
+
+    constexpr Mappings::Mappings(std::uint32_t numRounds) noexcept
         : mNumRounds(numRounds)
     {
     }
 
-    constexpr std::uint64_t
-    Mappings::IP(std::uint64_t block) const noexcept
+    constexpr std::uint64_t Mappings::IP(std::uint64_t block) const noexcept
     {
         constexpr MapFunction<64> kIP =
         {
@@ -65,11 +81,10 @@ namespace sdes
             63, 55, 47, 39, 31, 23, 15, 7,
         };
 
-        return MapBlock<std::uint64_t>(block, kIP);
+        return Map<std::uint64_t>(block, kIP);
     }
 
-    constexpr std::uint64_t
-    Mappings::FP(std::uint64_t block) const noexcept
+    constexpr std::uint64_t Mappings::FP(std::uint64_t block) const noexcept
     {
         constexpr MapFunction<64> kFP =
         {
@@ -83,11 +98,10 @@ namespace sdes
             33, 1, 41,  9, 49, 17, 57, 25,
         };
 
-        return MapBlock<std::uint64_t>(block, kFP);
+        return Map<std::uint64_t>(block, kFP);
     }
 
-    constexpr std::uint64_t
-    Mappings::PC1(std::uint64_t key) const noexcept
+    constexpr std::uint64_t Mappings::PC1(std::uint64_t key) const noexcept
     {
         constexpr MapFunction<56> kPC1 =
         {
@@ -101,24 +115,7 @@ namespace sdes
             21, 13,  5, 28, 20, 12,  4
         };
 
-        return MapBlock<std::uint64_t>(key, kPC1);
-    }
-
-    template<typename To, typename From, std::size_t ToSize>
-    constexpr To
-    Mappings::MapBlock(From block, const MapFunction<ToSize>& function) const noexcept
-    {
-        static_assert(ToSize <= (sizeof(To) * 8), "ToSize is too big");
-        To result = 0;
-
-        for (unsigned i = 0; i < ToSize; ++i)
-        {
-            bool value = block & 1;
-            result |= static_cast<To>(value) << (function[i] - 1); // Functions are 1-indexed
-            block >>= 1;
-        }
-
-        return result;
+        return Map<std::uint64_t>(key, kPC1);
     }
 
 } // namespace sdes
