@@ -61,8 +61,8 @@ namespace sdes
         for (unsigned i = 0; i < NumSplits; ++i)
         {
             const auto kIndex = i * kSplitSize;
-            const auto kSizeBoundary = kOne << (kIndex + kSplitSize + 1);
-            const auto kBlockMask = kSizeBoundary - (kOne << kIndex);
+            const auto kUpperBoundary = kOne << (kIndex + kSplitSize + 1);
+            const auto kBlockMask = kUpperBoundary - (kOne << kIndex);
 
             splits[i] = (block & kBlockMask) >> kIndex;
         }
