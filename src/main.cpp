@@ -2,10 +2,19 @@
 
 #include "sdes/sdes.hpp"
 
-int
-main()
+int main()
 {
-    sdes::Mappings mappings(16); // Give it the number of rounds
-    sdes::SDES algorithm(12354654642, mappings);
-    std::cerr << algorithm.Encrypt(123456789) << std::endl;
+    sdes::Mappings m;
+    sdes::SDES algorithm(1, m);
+
+    const auto kBlock = 1234;
+    const auto kCipher = algorithm.Encrypt(kBlock);
+
+    std::cerr
+        << kBlock << " > "
+        << kCipher << " > "
+        << algorithm.Decrypt(kCipher)
+        << std::endl;
+
+    // Broken for now
 }

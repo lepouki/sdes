@@ -7,25 +7,15 @@
 
 #include <cstdint>
 #include <array>
-#include <utility>
 
 namespace sdes
 {
 
-    /*
-     * Stores the mappings for different steps of encryption/decryption.
-     */
     class Mappings
     {
     public:
         template<std::size_t Size>
         using MapFunction = std::array<std::uint16_t, Size>;
-
-    public:
-        std::uint32_t mNumRounds;
-
-    public:
-        constexpr explicit Mappings(std::uint32_t numRounds) noexcept;
 
     public:
         [[nodiscard]]
@@ -35,7 +25,23 @@ namespace sdes
         constexpr std::uint64_t FP(std::uint64_t block) const noexcept;
 
         [[nodiscard]]
-        constexpr std::uint64_t PC1(std::uint64_t key) const noexcept;
+        constexpr std::uint64_t PC1(std::uint64_t block) const noexcept;
+
+        [[nodiscard]]
+        constexpr std::uint64_t PC2(std::uint64_t block) const noexcept;
+
+        [[nodiscard]]
+        constexpr std::uint64_t E(std::uint32_t block) const noexcept;
+
+        [[nodiscard]]
+        constexpr std::uint32_t S(std::uint64_t block) const noexcept;
+
+        [[nodiscard]]
+        constexpr std::uint32_t P(std::uint32_t block) const noexcept;
+
+    public:
+        [[nodiscard]]
+        static constexpr std::uint16_t GetKeyOffsetForRound(unsigned round) noexcept;
 
     private:
         template<typename To, typename /* Deduced */ From, std::size_t /* Deduced */ ToSize>
@@ -49,21 +55,17 @@ namespace sdes
     constexpr To Mappings::Map(From block, const MapFunction<ToSize>& function) const noexcept
     {
         static_assert(ToSize <= (sizeof(To) * 8), "ToSize is too big");
+
         To result = 0;
 
         for (unsigned i = 0; i < ToSize; ++i)
         {
-            bool value = block & 1u;
-            result |= static_cast<To>(value) << (function[i] - 1u); // Functions are 1-indexed
-            block >>= 1u;
+            const auto kBit = 1u << (function[i] - 1u); // Functions are 1-indexed
+            bool value = block & kBit;
+            result |= static_cast<To>(value) << i;
         }
 
         return result;
-    }
-
-    constexpr Mappings::Mappings(std::uint32_t numRounds) noexcept
-        : mNumRounds(numRounds)
-    {
     }
 
     constexpr std::uint64_t Mappings::IP(std::uint64_t block) const noexcept
@@ -100,7 +102,7 @@ namespace sdes
         return Map<std::uint64_t>(block, kFP);
     }
 
-    constexpr std::uint64_t Mappings::PC1(std::uint64_t key) const noexcept
+    constexpr std::uint64_t Mappings::PC1(std::uint64_t block) const noexcept
     {
         constexpr MapFunction<56> kPC1 =
         {
@@ -114,7 +116,79 @@ namespace sdes
             21, 13,  5, 28, 20, 12,  4
         };
 
-        return Map<std::uint64_t>(key, kPC1);
+        return Map<std::uint64_t>(block, kPC1);
+    }
+
+    constexpr std::uint64_t Mappings::PC2(std::uint64_t block) const noexcept
+    {
+        constexpr MapFunction<48> kPC2 =
+        {
+            14, 17, 11, 24,  1,  5,
+             3, 28, 15,  6, 21, 10,
+            23, 19, 12,  4, 26,  8,
+            16,  7, 27, 20, 13,  2,
+            41, 52, 31, 37, 47, 55,
+            30, 40, 51, 45, 33, 48,
+            44, 49, 39, 56, 34, 53,
+            46, 42, 50, 36, 29, 32
+        };
+
+        return Map<std::uint64_t>(block, kPC2);
+    }
+
+    constexpr std::uint64_t Mappings::E(std::uint32_t block) const noexcept
+    {
+        constexpr MapFunction<48> kE =
+        {
+            32,  1,  2,  3,  4,  5,
+             4,  5,  6,  7,  8,  9,
+             8,  9, 10, 11, 12, 13,
+            12, 13, 14, 15, 16, 17,
+            16, 17, 18, 19, 20, 21,
+            20, 21, 22, 23, 24, 25,
+            24, 25, 26, 27, 28, 29,
+            28, 29, 30, 31, 32,  1
+        };
+
+        return Map<std::uint64_t>(block, kE);
+    }
+
+    constexpr std::uint32_t Mappings::S(std::uint64_t block) const noexcept
+    {
+        // TODO: This is broken, replace with actual substitution but with a single S-box for each sub block
+
+        constexpr MapFunction<32> kS =
+        {
+            17, 26,  8, 28, 21, 23,  3, 16,
+            47, 20, 14, 32, 11, 36, 33,  6,
+             9, 30, 40, 31,  2, 35, 42, 12,
+            19,  4, 39, 13, 25, 38,  1, 37
+        };
+
+        return Map<std::uint32_t>(block, kS);
+    }
+
+    constexpr std::uint32_t Mappings::P(std::uint32_t block) const noexcept
+    {
+        constexpr MapFunction<32> kP =
+        {
+            16,  7, 20, 21, 29, 12, 28, 17,
+             1, 15, 23, 26,  5, 18, 31, 10,
+             2,  8, 24, 14, 32, 27,  3,  9,
+            19, 13, 30,  6, 22, 11,  4, 25
+        };
+
+        return Map<std::uint32_t>(block, kP);
+    }
+
+    constexpr std::uint16_t Mappings::GetKeyOffsetForRound(unsigned round) noexcept
+    {
+        constexpr MapFunction<16> kKeyOffsets =
+        {
+            1, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1
+        };
+
+        return kKeyOffsets[round];
     }
 
 } // namespace sdes
