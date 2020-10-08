@@ -57,7 +57,7 @@ namespace sdes
             for (unsigned j = 0; j < 8 && charIndex < message.size(); ++j)
             {
                 const auto kChar = block >> (j * 8u);
-                message[charIndex] = static_cast<std::string::value_type>(kChar);
+                message[charIndex] = static_cast<char>(kChar);
                 ++charIndex;
             }
         }
