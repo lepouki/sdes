@@ -89,7 +89,7 @@ namespace sdes
         constexpr std::uint64_t GetSubKey(const KeyHalves& keyHalves) const noexcept;
 
         [[nodiscard]]
-        constexpr std::uint32_t F(std::uint32_t blockHalf, std::uint64_t subKey) const noexcept;
+        constexpr std::uint32_t F(std::uint64_t subKey, std::uint32_t blockHalf) const noexcept;
 
     private:
         // Shifts the keys halves based on the current round
@@ -220,7 +220,7 @@ namespace sdes
                 ComputeKeyHalvesForRound(keyHalves, 16 - i, kKeyShift);
             }
 
-            upper ^= F(lower, GetSubKey(keyHalves));
+            upper ^= F(GetSubKey(keyHalves), lower);
             Swap(upper, lower);
         }
 
@@ -259,7 +259,7 @@ namespace sdes
         return mMappings.PC2(Glue<std::uint64_t, 28>(kHalves));
     }
 
-    constexpr std::uint32_t SDES::F(std::uint32_t blockHalf, std::uint64_t subKey) const noexcept
+    constexpr std::uint32_t SDES::F(std::uint64_t subKey, std::uint32_t blockHalf) const noexcept
     {
         const auto kCompressed = mMappings.S(mMappings.E(blockHalf) ^ subKey);
         return mMappings.P(kCompressed);
