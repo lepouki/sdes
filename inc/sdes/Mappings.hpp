@@ -15,8 +15,8 @@ namespace sdes
     class Mappings
     {
     public:
-        template<std::size_t Size>
-        using MapFunction = std::array<std::uint16_t, Size>;
+        template<std::size_t NumBits>
+        using MapFunction = std::array<std::uint16_t, NumBits>;
 
     public:
         [[nodiscard]]
@@ -65,7 +65,7 @@ namespace sdes
             const auto kBit = static_cast<To>(1u) << (function[i] - 1u); // Functions are 1-indexed
             const bool kValue = block & kBit;
 
-            // Add to the resulting block
+            // Or to the resulting block
             result |= static_cast<To>(kValue) << i;
         }
 
@@ -159,7 +159,8 @@ namespace sdes
 
     constexpr std::uint32_t Mappings::S(std::uint64_t block) const noexcept
     {
-        // S-boxes are simplified to a single mapping function
+        // S-boxes are simplified to a single map function
+
         constexpr MapFunction<32> kS =
         {
             17, 26,  8, 28, 21, 23,  3, 16,

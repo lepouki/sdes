@@ -23,6 +23,7 @@ namespace sdes
     public:
         constexpr void SetKey(std::uint64_t key) noexcept;
 
+        [[maybe_unused]]
         [[nodiscard]]
         constexpr std::uint64_t GetKey() const noexcept { return mKey; }
 
@@ -34,7 +35,7 @@ namespace sdes
         constexpr std::uint64_t Decrypt(std::uint64_t block) noexcept;
 
     private:
-        // One half of the master key, stored as a 32-bits int
+        // One half of the master key, stored as a 32-bit int
         class KeyHalf
         {
         public:
@@ -65,7 +66,7 @@ namespace sdes
         [[nodiscard]]
         static constexpr std::array<SubBlock, NumSplits> Split(Block block) noexcept;
 
-        // Recomposes a block from an array of sub blocks
+        // Glues an array of sub blocks into a single block
         template<typename Block, std::size_t SubBlockSize, typename /* Deduced */ SubBlock, std::size_t /* Deduced */ NumSplits>
         [[nodiscard]]
         static constexpr Block Glue(const std::array<SubBlock, NumSplits>& subBlocks) noexcept;
@@ -120,7 +121,7 @@ namespace sdes
         return subBlocks;
     }
 
-    template<typename Block, std::size_t SubBlockSize, typename /* Deduced */ SubBlock, std::size_t /* Deduced */ NumSplits>
+    template<typename Block, std::size_t SubBlockSize, typename SubBlock, std::size_t NumSplits>
     [[nodiscard]]
     constexpr Block SDES::Glue(const std::array<SubBlock, NumSplits>& subBlocks) noexcept
     {
