@@ -3,9 +3,7 @@ project(sdes)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_executable(sdes
-        inc/sdes/sdes.hpp
-        inc/sdes/Mappings.hpp
-        src/main.cpp inc/sdes/MessageOperations.hpp)
+file(GLOB SOURCE_FILES inc/sdes/*.hpp src/main.cpp)
+add_executable(sdes ${SOURCE_FILES})
 
 include_directories(inc)
