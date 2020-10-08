@@ -3,6 +3,24 @@
 #include "sdes/sdes.hpp"
 #include "sdes/MessageOperations.hpp"
 
+inline void PrintBlock(std::uint64_t block)
+{
+    for (unsigned i = 0; i < 8; ++i)
+    {
+        const auto kChar = block >> (i * 8u);
+        std::cout << static_cast<char>(kChar);
+    }
+}
+
+inline void PrintBlocks(const std::vector<std::uint64_t>& blocks)
+{
+    for (const auto& kBlock : blocks)
+    {
+        PrintBlock(kBlock);
+    }
+    std::cout << std::endl;
+}
+
 int main()
 {
     // Decompose the message into 64-bits blocks
@@ -21,6 +39,9 @@ int main()
         const auto kBlock = kBlocks[i];
         ciphers[i] = algorithm.Encrypt(kBlock);
     }
+
+    // Print the encrypted message
+    PrintBlocks(ciphers);
 
     // Decrypt the encrypted blocks
     for (auto& cipher : ciphers)
