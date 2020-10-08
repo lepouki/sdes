@@ -94,7 +94,7 @@ namespace sdes
         constexpr std::uint32_t F(std::uint64_t subKey, std::uint32_t blockHalf) const noexcept;
 
     private:
-        // Shifts the keys halves based on the current round
+        // Shifts the keys halves based on the provided round
         template<typename /* Deduced */ KeyShift>
         constexpr void ComputeKeyHalvesForRound(KeyHalves& halves, unsigned round, const KeyShift& keyShift) const noexcept;
     };
