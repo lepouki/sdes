@@ -23,8 +23,7 @@ namespace sdes
 
     std::vector<std::uint64_t> DecomposeMessage(const std::string& message) noexcept
     {
-        // 1 extra block to store the size of the last block
-        std::vector<std::uint64_t> blocks(message.size() / 8 + 2);
+        std::vector<std::uint64_t> blocks(message.size() / 8 + 2); // 1 extra block to store the size of the last block
 
         std::size_t charIndex = 0;
 
