@@ -6,14 +6,18 @@
 #define SDES_MESSAGE_OPERATIONS_HPP
 
 #include <cstdint>
+
 #include <string>
 #include <vector>
 
 namespace sdes
 {
 
+    [[nodiscard]]
     inline std::vector<std::uint64_t> DecomposeMessage(const std::string& message) noexcept;
-    inline std::string RecomposeMessage(const std::vector<std::uint64_t>& messageBlocks) noexcept;
+
+    [[nodiscard]]
+    inline std::string RecomposeMessage(const std::vector<std::uint64_t>& message) noexcept;
 
     // Implementation //
 
@@ -24,7 +28,7 @@ namespace sdes
 
         std::size_t charIndex = 0;
 
-        for (unsigned i = 0; i < blocks.size() - 1 /* Exclude the last block */; ++i)
+        for (unsigned i = 0; i < blocks.size() - 1; ++i) // Exclude the last block
         {
             auto& block = blocks[i];
 
@@ -41,29 +45,31 @@ namespace sdes
         return blocks;
     }
 
-    std::string RecomposeMessage(const std::vector<std::uint64_t>& messageBlocks) noexcept
+    std::string RecomposeMessage(const std::vector<std::uint64_t>& message) noexcept
     {
-        const auto kLastBlockSize = messageBlocks.back();
-        const auto kOriginalMessageLength = (messageBlocks.size() - 2) * 8 + kLastBlockSize;
+        const auto kLastBlockSize = message.back();
+        const auto kTextMessageLength = (message.size() - 2) * 8 + kLastBlockSize;
 
-        std::string message(kOriginalMessageLength, '*');
+        std::string text;
+        text.reserve(kTextMessageLength);
+
         std::size_t charIndex = 0;
 
-        for (unsigned i = 0; i < messageBlocks.size() - 1 /* Exclude the last block */; ++i)
+        for (unsigned i = 0; i < message.size() - 1; ++i) // Exclude the last block
         {
-            auto& block = messageBlocks[i];
+            const auto kBlock = message[i];
 
             // Retrieve up to 8 bytes from the block
-            for (unsigned j = 0; j < 8 && charIndex < message.size(); ++j)
+            for (unsigned j = 0; j < 8 && charIndex < text.capacity(); ++j)
             {
-                const auto kChar = block >> (j * 8u);
-                message[charIndex] = static_cast<char>(kChar);
+                const auto kChar = kBlock >> (j * 8u);
+                text += static_cast<char>(kChar);
                 ++charIndex;
             }
         }
 
         // Not sure if this should be moved or if RVO works here
-        return std::move(message);
+        return std::move(text);
     }
 
 } // namespace sdes

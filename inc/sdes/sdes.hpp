@@ -6,6 +6,7 @@
 #define SDES_SDES_HPP
 
 #include <cstdint>
+
 #include <array>
 #include <utility>
 

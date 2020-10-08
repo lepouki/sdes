@@ -6,6 +6,7 @@
 #define SDES_MAPPINGS_HPP
 
 #include <cstdint>
+
 #include <array>
 
 namespace sdes
