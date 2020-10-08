@@ -7,8 +7,7 @@ inline void PrintBlock(std::uint64_t block)
 {
     for (unsigned i = 0; i < 8; ++i)
     {
-        const auto kChar = block >> (i * 8u);
-        std::cout << static_cast<char>(kChar);
+        std::cout << static_cast<char>(block >> i * 8u);
     }
 }
 
