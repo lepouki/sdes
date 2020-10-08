@@ -7,7 +7,10 @@ inline void PrintBlock(std::uint64_t block)
 {
     for (unsigned i = 0; i < 8; ++i)
     {
-        std::cout << static_cast<char>(block >> i * 8u);
+        const auto kChar = block >> (i * 8u);
+
+        // Remove the 8th bit to get ASCII characters only
+        std::cout << static_cast<char>(kChar & 0x7Fu);
     }
 }
 
@@ -17,6 +20,7 @@ inline void PrintBlocks(const std::vector<std::uint64_t>& blocks)
     {
         PrintBlock(kBlock);
     }
+
     std::cout << std::endl;
 }
 
@@ -39,7 +43,7 @@ int main()
         ciphers[i] = algorithm.Encrypt(kBlock);
     }
 
-    // Print the encrypted message
+    // Print the encrypted message (non alphanumeric characters may break the output)
     PrintBlocks(ciphers);
 
     // Decrypt the encrypted blocks
