@@ -176,7 +176,7 @@ namespace sdes
     constexpr void SDES::KeyHalf::operator>>=(std::uint16_t offset) noexcept
     {
         const auto kDiff = (28u - offset);
-        mValue = (mValue >> offset) + (mValue << kDiff);\
+        mValue = (mValue >> offset) + (mValue << kDiff);
         Clamp();
     }
 
@@ -246,8 +246,8 @@ namespace sdes
     {
         const std::array<std::uint32_t, 2> kHalves =
         {
-            static_cast<std::uint32_t>(keyHalves.first),
-            static_cast<std::uint32_t>(keyHalves.second)
+            static_cast<std::uint32_t>(keyHalves.second),
+            static_cast<std::uint32_t>(keyHalves.first)
         };
 
         return mMappings.PC2(Glue<std::uint64_t, 28>(kHalves));
@@ -261,7 +261,7 @@ namespace sdes
 
     constexpr std::uint64_t SDES::MakeCipherBlock(std::uint32_t upper, std::uint32_t lower) noexcept
     {
-        const std::array<std::uint32_t, 2> kHalves = { upper, lower };
+        const std::array<std::uint32_t, 2> kHalves = { lower, upper };
         return Glue<std::uint64_t, 32>(kHalves);
     }
 

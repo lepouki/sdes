@@ -60,9 +60,9 @@ namespace sdes
 
         for (unsigned i = 0; i < ToSize; ++i)
         {
-            const auto kBit = 1u << (function[i] - 1u); // Functions are 1-indexed
-            bool value = block & kBit;
-            result |= static_cast<To>(value) << i;
+            const auto kBit = static_cast<To>(1u) << (function[i] - 1u); // Functions are 1-indexed
+            const bool kValue = block & kBit;
+            result |= static_cast<To>(kValue) << i;
         }
 
         return result;
@@ -79,7 +79,7 @@ namespace sdes
             57, 49, 41, 33, 25, 17,  9, 1,
             59, 51, 43, 35, 27, 19, 11, 3,
             61, 53, 45, 37, 29, 21, 13, 5,
-            63, 55, 47, 39, 31, 23, 15, 7,
+            63, 55, 47, 39, 31, 23, 15, 7
         };
 
         return Map<std::uint64_t>(block, kIP);
@@ -96,7 +96,7 @@ namespace sdes
             36, 4, 44, 12, 52, 20, 60, 28,
             35, 3, 43, 11, 51, 19, 59, 27,
             34, 2, 42, 10, 50, 18, 58, 26,
-            33, 1, 41,  9, 49, 17, 57, 25,
+            33, 1, 41,  9, 49, 17, 57, 25 
         };
 
         return Map<std::uint64_t>(block, kFP);
@@ -155,8 +155,7 @@ namespace sdes
 
     constexpr std::uint32_t Mappings::S(std::uint64_t block) const noexcept
     {
-        // TODO: This is broken, replace with actual substitution but with a single S-box for each sub block
-
+        // S-boxes are simplified to a single mapping function
         constexpr MapFunction<32> kS =
         {
             17, 26,  8, 28, 21, 23,  3, 16,

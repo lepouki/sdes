@@ -15,6 +15,4 @@ int main()
         << kCipher << " > "
         << algorithm.Decrypt(kCipher)
         << std::endl;
-
-    // Broken for now
 }
