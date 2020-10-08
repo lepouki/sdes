@@ -60,8 +60,11 @@ namespace sdes
 
         for (unsigned i = 0; i < ToSize; ++i)
         {
+            // Get 'function[i]'th bit from the original block
             const auto kBit = static_cast<To>(1u) << (function[i] - 1u); // Functions are 1-indexed
             const bool kValue = block & kBit;
+
+            // Add to the resulting block
             result |= static_cast<To>(kValue) << i;
         }
 

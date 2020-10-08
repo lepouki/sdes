@@ -33,6 +33,7 @@ namespace sdes
         constexpr std::uint64_t Decrypt(std::uint64_t block) noexcept;
 
     private:
+        // One half of the master key, stored as a 32-bits int
         class KeyHalf
         {
         public:
@@ -42,7 +43,7 @@ namespace sdes
             [[nodiscard]]
             constexpr explicit operator std::uint32_t() const noexcept { return mValue; }
 
-        public: // Shift operators with bit wrapping
+        public: // Shift operators with wrapping
             constexpr void operator<<=(std::uint16_t offset) noexcept;
             constexpr void operator>>=(std::uint16_t offset) noexcept;
 
@@ -58,14 +59,17 @@ namespace sdes
     private:
         static constexpr void Swap(std::uint32_t& upper, std::uint32_t& lower) noexcept;
 
+        // Splits a block into an array of sub blocks
         template<typename SubBlock, std::size_t NumSplits, std::size_t BlockSize, typename /* Deduced */ Block>
         [[nodiscard]]
         static constexpr std::array<SubBlock, NumSplits> Split(Block block) noexcept;
 
+        // Recomposes a block from an array of sub blocks
         template<typename Block, std::size_t SubBlockSize, typename /* Deduced */ SubBlock, std::size_t /* Deduced */ NumSplits>
         [[nodiscard]]
         static constexpr Block Glue(const std::array<SubBlock, NumSplits>& subBlocks) noexcept;
 
+        // Recomposes the cipher blocks from its halves
         [[nodiscard]]
         static constexpr std::uint64_t MakeCipherBlock(std::uint32_t upper, std::uint32_t lower) noexcept;
 
@@ -80,6 +84,7 @@ namespace sdes
         [[nodiscard]]
         constexpr KeyHalves InitializeKeyHalves(bool encrypt) const noexcept;
 
+        // Recomposes the sub key from its halves
         [[nodiscard]]
         constexpr std::uint64_t GetSubKey(const KeyHalves& keyHalves) const noexcept;
 
@@ -87,6 +92,7 @@ namespace sdes
         constexpr std::uint32_t F(std::uint32_t blockHalf, std::uint64_t subKey) const noexcept;
 
     private:
+        // Shifts the keys halves based on the current round
         template<typename /* Deduced */ KeyShift>
         constexpr void ComputeKeyHalvesForRound(KeyHalves& halves, unsigned round, const KeyShift& keyShift) const noexcept;
     };
