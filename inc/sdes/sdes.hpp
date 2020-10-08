@@ -45,7 +45,7 @@ namespace sdes
             [[nodiscard]]
             constexpr explicit operator std::uint32_t() const noexcept { return mValue; }
 
-        public: // Shift operators with wrapping
+        public: // Shift operators with wrapping (not standard compliant, who cares)
             constexpr void operator<<=(std::uint16_t offset) noexcept;
             constexpr void operator>>=(std::uint16_t offset) noexcept;
 
