@@ -45,7 +45,7 @@ namespace sdes
             [[nodiscard]]
             constexpr explicit operator std::uint32_t() const noexcept { return mValue; }
 
-        public: // Shift operators with wrapping (not standard compliant for the return type, who cares)
+        public: // Shift operators with wrapping (return type not standard compliant, who cares)
             constexpr void operator<<=(std::uint16_t offset) noexcept;
             constexpr void operator>>=(std::uint16_t offset) noexcept;
 
@@ -71,9 +71,9 @@ namespace sdes
         [[nodiscard]]
         static constexpr Block Glue(const std::array<SubBlock, NumSplits>& subBlocks) noexcept;
 
-        // Recomposes the cipher blocks from its halves
+        // Recomposes a block from its halves
         [[nodiscard]]
-        static constexpr std::uint64_t MakeCipherBlock(std::uint32_t upper, std::uint32_t lower) noexcept;
+        static constexpr std::uint64_t Recompose(std::uint32_t upper, std::uint32_t lower) noexcept;
 
     private:
         std::uint64_t mKey;
@@ -226,7 +226,7 @@ namespace sdes
             Swap(upper, lower);
         }
 
-        return mMappings.FP(MakeCipherBlock(upper, lower));
+        return mMappings.FP(Recompose(upper, lower));
     }
 
     constexpr auto SDES::InitializeKeyHalves(bool encrypt) const noexcept -> KeyHalves
@@ -267,7 +267,7 @@ namespace sdes
         return mMappings.P(kCompressed);
     }
 
-    constexpr std::uint64_t SDES::MakeCipherBlock(std::uint32_t upper, std::uint32_t lower) noexcept
+    constexpr std::uint64_t SDES::Recompose(std::uint32_t upper, std::uint32_t lower) noexcept
     {
         const std::array<std::uint32_t, 2> kHalves = { lower, upper };
         return Glue<std::uint64_t, 32>(kHalves);

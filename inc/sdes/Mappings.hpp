@@ -59,7 +59,7 @@ namespace sdes
 
         To result = 0;
 
-        for (unsigned i = 0; i < ToSize; ++i)
+        for (std::size_t i = 0; i < ToSize; ++i)
         {
             // Get 'function[i]'th bit from the original block
             const auto kBit = static_cast<To>(1u) << (function[i] - 1u); // Functions are 1-indexed

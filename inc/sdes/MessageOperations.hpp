@@ -27,7 +27,7 @@ namespace sdes
 
         std::size_t charIndex = 0;
 
-        for (unsigned i = 0; i < blocks.size() - 1; ++i) // Exclude the last block
+        for (std::size_t i = 0; i < blocks.size() - 1; ++i) // Exclude the last block
         {
             auto& block = blocks[i];
 
@@ -54,7 +54,7 @@ namespace sdes
 
         std::size_t charIndex = 0;
 
-        for (unsigned i = 0; i < message.size() - 1; ++i) // Exclude the last block
+        for (std::size_t i = 0; i < message.size() - 1; ++i) // Exclude the last block
         {
             const auto kBlock = message[i];
 
