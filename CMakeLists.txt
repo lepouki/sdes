@@ -3,7 +3,7 @@ project(sdes)
 
 set(CMAKE_CXX_STANDARD 17)
 
-file(GLOB SOURCE_FILES inc/sdes/*.hpp src/main.cpp)
+file(GLOB_RECURSE SOURCE_FILES inc/*.hpp src/*.cpp)
 add_executable(sdes ${SOURCE_FILES})
 
 include_directories(inc)
