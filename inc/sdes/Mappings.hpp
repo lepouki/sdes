@@ -187,6 +187,8 @@ namespace sdes
 
     constexpr std::uint16_t Mappings::GetKeyOffsetForRound(unsigned round) noexcept
     {
+        // Round offsets must be less than 28 bits
+
         constexpr MapFunction<16> kKeyOffsets =
         {
             1, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1
